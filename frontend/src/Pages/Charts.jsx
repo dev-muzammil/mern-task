@@ -2,18 +2,23 @@ import React, { useEffect, useState } from "react";
 import { Chart } from "chart.js/auto";
 import { Bar, Doughnut, Line, Pie } from "react-chartjs-2";
 import axios from "axios";
+import { Alert } from "flowbite-react";
 
 const Charts = () => {
   const [companies, setCompanies] = useState([]);
+  const [errorMessage, seterrorMessage] = useState("");
   console.log(companies);
   const fetchData = async () => {
     try {
       const res = await axios.get("http://localhost:8000/data/");
-      const data = res.data;
-      setCompanies(data);
-      console.log(data);
+      console.log(res.data);
+      setCompanies(res.data.myjson);
+      if (!res.success === false) {
+        seterrorMessage(res.message);
+      }
     } catch (error) {
       console.log(error);
+      seterrorMessage(error.message);
     }
   };
   useEffect(() => {
@@ -21,6 +26,12 @@ const Charts = () => {
   }, []);
   return (
     <div>
+      {errorMessage && (
+        <Alert color="failure" className="max-w-xs mx-auto my-2">
+          {errorMessage}
+        </Alert>
+      )}
+
       <div className="bg-slate-900 bg-opacity-50 p-4 rounded-md mx-auto max-w-4xl my-2">
         <Bar
           className=""

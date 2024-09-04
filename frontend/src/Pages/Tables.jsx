@@ -1,21 +1,30 @@
-import { Table } from "flowbite-react";
+import { Alert, Table } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 const Tables = () => {
   const [companies, setCompanies] = useState([]);
+  const [errorMessage, seterrorMessage] = useState("");
   const fetchData = async () => {
-    const res = await axios.get("http://localhost:8000/data/");
-    console.log(res.data);
-    setCompanies(res.data);
+    try {
+      const res = await axios.get("http://localhost:8000/data/");
+      console.log(res.data);
+      setCompanies(res.data.myjson);
+      if (!res.success === false) {
+        seterrorMessage(res.message);
+      }
+    } catch (error) {
+      console.log(error);
+      seterrorMessage(error.message);
+    }
   };
   useEffect(() => {
     fetchData();
   }, []);
 
-
   return (
     <div className="overflow-x-auto">
+      {errorMessage && <Alert color="failure" className="max-w-xs mx-auto my-2">{errorMessage}</Alert>}
       <Table className="bg-transparent text-white">
         <Table.Head>
           <Table.HeadCell>Name</Table.HeadCell>
@@ -30,10 +39,7 @@ const Tables = () => {
           {companies.length > 0 &&
             companies.map((item, index) => {
               return (
-                <Table.Row
-                  key={index}
-                  className=""
-                >
+                <Table.Row key={index} className="">
                   <Table.Cell className="whitespace-nowrap font-medium">
                     {item.name}
                   </Table.Cell>
