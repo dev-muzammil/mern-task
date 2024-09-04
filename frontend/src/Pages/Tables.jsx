@@ -10,7 +10,7 @@ const Tables = () => {
       const res = await axios.get("http://localhost:8000/data/");
       console.log(res.data);
       setCompanies(res.data.myjson);
-      if (!res.success === false) {
+      if (res.success === false) {
         seterrorMessage(res.message);
       }
     } catch (error) {
